@@ -5353,12 +5353,12 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
     ""      value office?           // ( -- "y"|"n" ) Is office endpoint alive?
     ""      value space?            // ( -- "y"|"n" ) Is space endpoint alive?
     ""      value endpoint          // ( -- "url" ) API endpoint url can be changed so as to use different resources
-                                    /// char https://ChatFORTH-1-y6324213.deta.app to endpoint
+                                    /// char https://chatforth-1-j0711928.deta.app to endpoint
                                     /// char http://localhost:5189 to endpoint
                                     /// char http://10.XX.XX.XX:XXXX to endpoint
                                     /// Usually it is `${protocol}//${hostname}${port}`
 
-    js> ["http://localhost:5189","http://10.XX.XX.XX:5189","https://ChatFORTH-1-y6324213.deta.app"]
+    js> ["http://localhost:5189","https://chatforth-1-j0711928.deta.app"]
             \ ( repeat the array so as to make a retry of them all ) js> tos().concat(tos()) nip
             constant endpoints      // ( -- [...] ) Detect possible API backends when launched from file
 
@@ -5388,7 +5388,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                             // url attributes
                             url = new URL(pop());
                             push(url.protocol).dictate('constant url.protocol // ( -- "https:" ) Protocol of this .htm e.g. http:, https: or file:');
-                            push(url.hostname).dictate('constant url.hostname // ( -- "10.XX.XX.XX" ) Hostname of this .htm e.g. localhost, 127.0.0.1 or ChatFORTH-1-y6324213.deta.app');
+                            push(url.hostname).dictate('constant url.hostname // ( -- "10.XX.XX.XX" ) Hostname of this .htm e.g. localhost, 127.0.0.1 or chatforth-1-j0711928.deta.app');
                             push(url.pathname).dictate('constant url.pathname // ( -- "/ChatFORTH/ChatFORTH.htm" ) Route and filename of this .htm e.g. /chatlkk/chatlkk.htm');
 
                             // port
@@ -5398,13 +5398,13 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                             
                             // launch location and chatlkk?
                             push('n').dictate('to chatlkk?')
-                            if (url.hostname.indexOf("ChatFORTH")!=-1){
+                            if (url.hostname.toLowerCase().indexOf("chatforth")!=-1){
                                 push("space");
                             } else if (url.protocol == "file:"){
                                 push("file");
                             } else if (["localhost", "127.0.0.1"].indexOf(url.hostname) != -1){
                                 push("local");
-                            } else if (nw != 'undefined') {
+                            } else if (typeof nw !== 'undefined') {
                                 push("nw");
                             }
                             dictate('constant launch-location // ( -- [file|local|office|space] ) Launch location of this .htm');
@@ -5437,7 +5437,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                         console.log('API server is alive! ' + response.url);
                         if (response.url.indexOf("//10.XX.XX.XX")!=-1) push('y').dictate('to office?');
                         if (response.url.indexOf("//localhost")!=-1 || response.url.indexOf("//127.0.0.1")!=-1) push('y').dictate('to local?');
-                        if (response.url.indexOf("//ChatFORTH")!=-1) push('y').dictate('to space?');
+                        if (response.url.toLowerCase().indexOf("//chatforth")!=-1) push('y').dictate('to space?');
                         if (!vm.execute('endpoint').pop()) {
                             type('API server is alive! ' + response.url);
                             push(response.url.replace(/\/$/,"")).dictate('to endpoint');
@@ -5446,7 +5446,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                         console.error('Error API server:' + response.url);
                         if (response.url.indexOf("//10.XX.XX.XX")!=-1) push('n').dictate('to office?');
                         if (response.url.indexOf("//localhost")!=-1 || response.url.indexOf("//127.0.0.1")!=-1) push('n').dictate('to local?');
-                        if (response.url.indexOf("//ChatFORTH")!=-1) push('n').dictate('to space?');
+                        if (response.url.toLowerCase().indexOf("//chatforth")!=-1) push('n').dictate('to space?');
                       }
                     })
                     .catch(error => console.error('Error checking API server:', error));
@@ -5771,7 +5771,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                         "frequency_penalty": vm["chatgpt.f"]["frequency_penalty"],
                         "presence_penalty" : vm["chatgpt.f"]["presence_penalty"],
                         "stop" :             vm["chatgpt.f"]["stops"],
-                        "api_key":           vm["chatgpt.f"]["api_key"],     // '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',
+                        "api_key":           vm["chatgpt.f"]["api_key"],     // 'sk-....',
                         "api_type":          vm["chatgpt.f"]["api_type"],    // 'open_ai',
                         "api_base":          vm["chatgpt.f"]["api_base"],    // 'https://api.openai.com/v1',
                         "api_version":       vm["chatgpt.f"]["api_version"], // ""
