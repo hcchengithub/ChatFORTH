@@ -35,7 +35,8 @@ Try it now [ChatFORTH](https://chatforth-1-j0711928.deta.app/ChatFORTH/ChatFORTH
 Running ChatFORTH does not require any installation and works on Windows, Mac or Linux. To use ChatFORTH simply open [ChatFORTH](https://chatforth-1-j0711928.deta.app/ChatFORTH/ChatFORTH.html) in a web browser to start running it immediately. You can also save ChatFORTH.html to your local computer by using Ctrl+s from the page and run it on your local computer as well for further modifications if needed. If you do not have an OpenAI `API_KEY` (or other AI options such as Google Bard when it will be available), then please get one before proceeding further, `API_KEY` is necessary. 
 
 ### API server main.py 
-This is the FastAPI server which needs to be set up in order to resolve CORS policy problems when running ChatFORTH locally in Chrome or Edge browsers . To run main.py, first clone the project from GitHub and then run `python main.py` command from within the directory where main.py resides after setting up your Python environment according to requirements specified in `requirements.txt`.  
+
+"main.py" is an API server. When running "ChatFORTH.html", it will automatically search for an available API server either locally or on the deta.app website to resolve CORS policy problems. This "main.py" has been running on deta.app, so you do not need to run your own API server on your local computer. However, if deta.app fails or you have reasons to modify "main.py," then clone the project from GitHub and execute the 'python main.py' command within the directory where "main.py" resides after setting up your Python environment according to the requirements specified in requirements.txt.
 
 ## Questions and Suggestions
 
