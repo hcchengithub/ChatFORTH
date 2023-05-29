@@ -5,6 +5,7 @@ FORTH, originally designed as a conversational environment, has evolved to inclu
 To start chatting on ChatFORTH, simply start your message with exactly one leading space or use the 'user:' command followed by your message. Additionally, you can utilize frequently used commands through macros without having to type them repeatedly. Context editing allows for redirection of conversations and error correction while providing more information for the AI to analyze data insights seamlessly.
 
 Try it now [ChatFORTH](https://chatforth-1-j0711928.deta.app/ChatFORTH/ChatFORTH.html)
+![Poetry of FORTH](doc/README/chatForth-readme-1.png)
 
 ## Features
 
