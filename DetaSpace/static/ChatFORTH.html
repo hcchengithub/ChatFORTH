@@ -5454,7 +5454,8 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
             </js>
             .( Waiting for Endpoint. Check your network if it takes too long . . . ) cr
             [begin] 100 nap endpoint [until]
-
+            local? [if] char http://localhost:5189 to endpoint [then] \ Prioritize using a local API server when available. 
+            
         launch-location char file = 
         [if]
             \ Use the above scan and found server assuming the priority is correct.
@@ -6949,10 +6950,11 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
             </text> unindent ( html )
             js> localStorage.getItem('api_key') ?dup [if] [else] "" [then] ( html default-api-key )
             swap :> replace('_apikey_',pop())
-            md>html </o> drop \ 畫面上的 UI 靠以下的 cls 清除。
+            md>html </o> ( element )
 
             \ waiting for api key become available
             [begin] 100 nap api_key [until]
+            ( element ) :: remove()
         [then]
 
     \ Greetings at system started
