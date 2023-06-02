@@ -5355,8 +5355,8 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
     ""      value endpoint          // ( -- "url" ) API endpoint url can be changed so as to use different resources
                                     /// char https://chatforth-1-j0711928.deta.app to endpoint
                                     /// char http://localhost:5189 to endpoint
-                                    /// char http://10.XX.XX.XX:XXXX to endpoint
                                     /// Usually it is `${protocol}//${hostname}${port}`
+    0       value session_cost      // ( -- $ ) Total expense of this conversation session
 
     js> ["http://localhost:5189","https://chatforth-1-j0711928.deta.app"]
             \ ( repeat the array so as to make a retry of them all ) js> tos().concat(tos()) nip
@@ -5388,7 +5388,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                             // url attributes
                             url = new URL(pop());
                             push(url.protocol).dictate('constant url.protocol // ( -- "https:" ) Protocol of this .htm e.g. http:, https: or file:');
-                            push(url.hostname).dictate('constant url.hostname // ( -- "10.XX.XX.XX" ) Hostname of this .htm e.g. localhost, 127.0.0.1 or chatforth-1-j0711928.deta.app');
+                            push(url.hostname).dictate('constant url.hostname // ( -- "127.0.0.1" ) Hostname of this .htm e.g. localhost, 127.0.0.1 or chatforth-1-j0711928.deta.app');
                             push(url.pathname).dictate('constant url.pathname // ( -- "/ChatFORTH/ChatFORTH.htm" ) Route and filename of this .htm e.g. /chatlkk/chatlkk.htm');
 
                             // port
@@ -5435,7 +5435,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     .then(response => {
                       if (response.ok) {
                         console.log('API server is alive! ' + response.url);
-                        if (response.url.indexOf("//10.XX.XX.XX")!=-1) push('y').dictate('to office?');
+                     // if (response.url.indexOf("//10.XX.XX.XX")!=-1) push('y').dictate('to office?');
                         if (response.url.indexOf("//localhost")!=-1 || response.url.indexOf("//127.0.0.1")!=-1) push('y').dictate('to local?');
                         if (response.url.toLowerCase().indexOf("//chatforth")!=-1) push('y').dictate('to space?');
                         if (!vm.execute('endpoint').pop()) {
@@ -5444,7 +5444,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                         }
                       } else {
                         console.error('Error API server:' + response.url);
-                        if (response.url.indexOf("//10.XX.XX.XX")!=-1) push('n').dictate('to office?');
+                     // if (response.url.indexOf("//10.XX.XX.XX")!=-1) push('n').dictate('to office?');
                         if (response.url.indexOf("//localhost")!=-1 || response.url.indexOf("//127.0.0.1")!=-1) push('n').dictate('to local?');
                         if (response.url.toLowerCase().indexOf("//chatforth")!=-1) push('n').dictate('to space?');
                       }
@@ -5952,23 +5952,23 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     (>messages) to messages ;
                     /// Given subset or part of it with slicing, e.g. chatml [-3:]
 
-    : (token-count) ( -- count ) \ Count the ChatML array for prompt token size and messages token size
+    : (token-count) ( -- prompt_tcount messages_tcount) \ Count the ChatML array for prompt token size and messages token size
                     \ prompt token size
                     chatml (>prompt) ( "prompt" ) >token_count ( prompt_tcount )
                     chatml (>messages) stringify ( "messages" ) >token_count ( messages_tcount ) ;
 
-    : cost          ( -- float ) \ Get the total cost of the conversation.
-                    chatml <js> chatml = pop()
-                        cost = 0
-                        for (turn of chatml){
-                            if (turn.hasOwnProperty('cost')){
-                                cost += turn.cost
-                            }
-                        }
-                        push(cost.toFixed(6))
-                    </js> ; AI!
-
-    : info          ( -- ) \ Show recent token count, active AI model and its token limit, total cost, endpoint address, etc.
+    \ 作廢 session_cost 當時就該算好，不可如此結算。
+    \ : cost          ( -- float ) \ Get the total cost of the conversation.
+    \                 chatml <js> chatml = pop()
+    \                     cost = 0
+    \                     for (turn of chatml){
+    \                         if (turn.hasOwnProperty('cost')){
+    \                             cost += turn.cost
+    \                         }
+    \                     }
+    \                     push(cost.toFixed(6))
+    \                 </js> ; AI!
+    : info          ( -- ) \ Show recent token count, active AI model and its token limit, session_cost, endpoint address, etc.
                     \ Server info -------------------------
                     \ 9        8               7            6            5            4        3       2        1      0
                       endpoint launch-location url.protocol url.hostname url.pathname url.port office? chatlkk? local? space?
@@ -6025,10 +6025,10 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     md>html </o> drop
 
                     \ Cost info -------------------------
-                    cost s" Total cost: _cost_" ( cost msg ) :> replace('_cost_',pop()) . cr cr
+                    session_cost :> toFixed(4) s" Total cost: _cost_" ( cost msg ) :> replace('_cost_',pop()) . cr cr
                     ; AI!
 
-    : prompt-cost   ( -- $ ) \ Total cost of the ChatML array
+    : prompt-cost   ( -- $ ) \ Total cost of the ChatML array (the input cost)
                     ChatModel? if
                         chatml (>messages) stringify ( "messages" ) >token_count ( messages_tcount )
                     else
@@ -6037,12 +6037,12 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     api_model >price :> [0] ( prompt$ )
                     * ;
 
-    : (complete-cost) ( msg -- $ ) \ Cost of the completion message of api_model
+    : (complete-cost) ( msg -- $ ) \ Cost of the completion message of api_model (the output cost)
                     >token_count  ( count ) 1000 / ( tcount of 1000 tokens )
                     api_model >price :> [1] ( complet$ )
                     * ;
 
-    : complete-cost ( -- $ ) \ Cost of the ChatML[-1].msg of api_model
+    : complete-cost ( -- $ ) \ Cost of the ChatML[-1].msg of api_model (the output cost)
                     chatml [-1] :> msg (complete-cost) ;
 
     : (complete)    ( model temperature max_tokens "prompt" -- msg ) \ GPT complete() call, from low level prompt to msg from completion also vm.gptresponse has full HTTP response.
@@ -6086,20 +6086,24 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     /// ChatML array needs to be updated by following process.
 
     : (.chat)       ( idx -- ) \ Display a turn in Markdown from the ChatML array
-                    chatml :> [tos()] dup ( idx turn turn )
-                    :> msg md>html </o> drop \ print the AI completed message ( idx turn )
-                    dup :> time ( idx turn time ) <js> new Date(pop())</jsV> ( idx turn time' ) 
-                    js> tos(1).hasOwnProperty('ai')?tos(1)['ai']:""; ( idx turn time model )
-                    rot  ( idx time model turn )
-                    js> tos().hasOwnProperty('cost')?tos()['cost'].toFixed(6):""; nip ( idx time model cost )
-                    s" [_idx_] _model_ _cost_ _time_"
-                    :> replace("_idx_",pop(3)).replace("_time_",pop(2)).replace("_model_",pop(1)).replace("_cost_",pop())
+                    session_cost :> toFixed(4) swap ( COST idx )
+                    chatml :> [tos()] dup ( COST idx turn turn )
+                    :> msg md>html </o> drop \ print the AI completed message ( COST idx turn )
+                    dup :> time ( idx turn time ) <js> new Date(pop())</jsV> ( COST idx turn time' ) 
+                    js> tos(1).hasOwnProperty('ai')?tos(1)['ai']:""; ( COST idx turn time model )
+                    rot  ( COST idx time model turn )
+                    js> tos().hasOwnProperty('cost')?tos()['cost'].toFixed(4):"0"; nip ( COST idx time model cost )
+                    s" [_idx_] _model_ _cost_/_session_cost_ _time_"
+                    :> replace("_session_cost_",pop(4)).replace("_idx_",pop(3)).replace("_time_",pop(2)).replace("_model_",pop(1)).replace("_cost_",pop())
                     <o> <p style="text-align:right;"></p></o> :: innerText=pop()
                     <o> <hr></o> drop ;
                     /// idx is the ChatML array index of this turn
 
     : .chat         ( -- ) \ Display the last turn in Markdown from the ChatML array.
                     chatml count 1- nip (.chat) ;
+
+    : session_cost+= ( $ -- ) \ Accumulate the $ into session_cost 
+                    session_cost + to session_cost ;
 
     : complete      ( -- ) \ Make api_model (when is not ChatModels) to complete the ChatML array and print its message.
                     chatml [-1] :> tag!=dictate('tag-assistant').pop() if "" </assistant> then \ 非 tag-assistant 就需要發動。
@@ -6123,7 +6127,9 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     (complete) ( msg ) ?dup if \ msg==""  時失敗作廢
                         \ pop the last turn, it must be a tag-assistant, to be appanded with completed message
                         chatml :> pop() :> msg swap + </assistant> \ turn.time 時間稍微延後了一些無妨
-                        prompt-cost complete-cost + ( cost ) chatml [-1] :: cost=pop() \ 回填 cost
+                        prompt-cost complete-cost + ( cost ) 
+                            dup session_cost+=
+                            chatml [-1] :: cost=pop() \ 回填 cost
                         .chat
                     then ;
                     /// ChatML array and prompt are updated.
@@ -6140,7 +6146,9 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     \ then
                     (chat-complete) ( msg ) ?dup if \ msg=="" 時失敗作廢
                         </assistant> \ turn.time 時間稍微延後了一些無妨
-                        prompt-cost complete-cost + ( cost ) chatml [-1] :: cost=pop() \ 回填 cost
+                        prompt-cost complete-cost + ( cost ) 
+                            dup session_cost+=
+                            chatml [-1] :: cost=pop() \ 回填 cost
                         .chat
                     then ;
                     /// ChatML array and prompt are updated.
@@ -6440,9 +6448,11 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
 
     : correctify:   ( <text> -- ) \ Correct English mistakes
                     <text>
-                        Don't response to it but just correct any English mistakes
-                        in the following text:
-                    </text> trims
+                        You are my English teacher. Please do not respond to the content, but focus on correcting 
+                        any English errors in the text provided below. If there are non-English words or sentences 
+                        present, kindly translate them into English before making corrections.
+                        Following is the text:
+                    </text> trims js> "\n" +
                     char <totheendoftheinputbox> word + trims </user>
                     chat ; AI!
                     /// ex. correctify: 台語嘛也通
@@ -6917,6 +6927,25 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                 ; AI!
                 /// The loaded knowledge will be deleted immediately after each interaction in order to save tokens.
                 /// Use the 'manual-for-help:' command to access the knowledge base if you are curious.
+
+    : chatml-tag-all-turns ( "tag" -- ) \ Mark all chat turns as "tag". Invalid tag does nothing.
+        ( tag ) chatml <js>
+            chatml = pop(); tag = pop();
+            chatml_tags = [
+                "<|im_start|>system",
+                "<|im_start|>user",
+                "<|im_start|>assistant",
+                "Comment",
+                "Deleted"
+                ] 
+            if (chatml_tags.includes(tag)) {
+                chatml.forEach(function(turn) {
+                    turn.tag = tag
+                }); 
+            }
+        </js> ;
+        /// char Comment chatml-tag-all-turns
+        /// char Deleted chatml-tag-all-turns
 
     marker ---
 
