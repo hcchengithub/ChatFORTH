@@ -43,7 +43,7 @@ Running ChatFORTH does not require any installation and works on Windows, Mac or
 
 If you have any questions or suggestions regarding this project, please feel free to open an issue on our GitHub repository [here](https://github.com/hcchengithub/ChatFORTH/issues).
 
-### ChatFORTH need your help!
+### ChatFORTH needs your help!
 
 - (issue #1) The FastAPI API server 'main.py' is hosted on [Deta.space](https://deta.space), and I have noticed that it frequently encounters a "Gateway error 502". Although it is not severe and can be recovered simply by retrying, how can this be improved? Should I consider moving to Microsoft Azure or Google GCP, or could the issue be with my main.py file?
 
