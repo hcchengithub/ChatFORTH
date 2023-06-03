@@ -4,6 +4,7 @@ FORTH, originally designed as a conversational environment, has evolved to inclu
 
 To start chatting on ChatFORTH, simply start your message with exactly one leading space or use the 'user:' command followed by your message. Additionally, you can utilize frequently used commands through macros without having to type them repeatedly. Context editing allows for redirection of conversations and error correction while providing more information for the AI to analyze data insights seamlessly.
 
+Use `tutor`, `help`, `help *`, `help help:`, `help include`, `help save-page`, `load_chatforth_book`, or `manual-for-help:` commands to know more about ChatFORTH.
 Try it now [ChatFORTH](https://chatforth-1-j0711928.deta.app/ChatFORTH/ChatFORTH.html)
 ![Poetry of FORTH](doc/README/chatForth-readme-1.png)
 
@@ -40,7 +41,17 @@ Running ChatFORTH does not require any installation and works on Windows, Mac or
 
 ## Questions and Suggestions
 
-If you have any questions or suggestions regarding this project, please feel free to open an issue on our GitHub repository [here](https://github.com/hcchengithub/ChatFORTH/issues). We welcome all feedback and contributions!
+If you have any questions or suggestions regarding this project, please feel free to open an issue on our GitHub repository [here](https://github.com/hcchengithub/ChatFORTH/issues).
+
+### I need your help!
+
+- (issue #1) The FastAPI API server 'main.py' is hosted on [Deta.space](https://deta.space), and I have noticed that it frequently encounters a "Gateway error 502". Although it is not severe and can be recovered simply by retrying, how can this be improved? Should I consider moving to Microsoft Azure or Google GCP, or could the issue be with my main.py file?
+
+- (issue #2) I would like someone to define a FORTH word or command called `summarize` that takes a URL as input and returns the summarized text of the given web page on ChatFORTH. Perhaps it could be a word that reads the URL, parses the main essay, and returns it to TOS. I can take care of the rest then. It would be great if this command could work not only with URLs but also with PDF files, Word files, and other formats.
+
+- (issue #3) In addition to `summarize`, another useful command would be `translate` (as [seen in this example](doc/README/Applying%20LLMs%20to%20Enterprise%20Data%20-%20Concepts,%20Concerns,%20and%20Hot-Takes.html) where ChatFORTH is already capable of it, but I want it to be further improved) that helps translate an article into ChatFORTH chat turns paragraph by paragraph. This is particularly helpful for reading foreign articles because we can easily save and restore context on ChatFORTH and even edit the article directly on ChatFORTH, allowing us to jot down our comments and making reading a wonderful experience.
+
+- Your ideas too ... 
 
 May the forth be with you!
 

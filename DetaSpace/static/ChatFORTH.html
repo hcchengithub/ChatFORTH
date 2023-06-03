@@ -574,7 +574,7 @@ if (typeof exports!='undefined') exports.jeForth = jeForth; // export for node.j
     var jeforth_project_k_virtual_machine_object = new jeForth(); // A permanent name.
     var vm = jeforth_project_k_virtual_machine_object; // "vm" may not be so permanent.
     (function(){
-        vm.version = 1.16; // improve chatml string array to dict array
+        vm.version = 1.17; // improve chatml string array to dict array
         vm.appname = "jeforth.3htm"; //  不要動， jeforth.3we kernel 用來分辨不同 application。
         vm.host = window; // DOM window is the root for 3HTM. global 掛那裡的根據。
         vm.path = ["dummy", "3ce", "doc", "f", "3htm/f", "3htm/canvas", "3htm", "demo", "playground"];
@@ -6268,7 +6268,22 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     \ dup 好了之後跳過去，要嗎？要！這樣才看得出效果。
                     DoNextturn
                     ;
-    
+                    
+    : DoComplete    ( -- ) \ Have AI to complete this chat turn ( any tag type ) and append the answer below. 
+                    \ Get the chat turn idx
+                        js> editidx.innerText int >r ( R: idx )
+                    \ Duplicate 本 chat turn 
+                        DoSave DoDuplicate DoPrevturn
+                    \ 本 chat turn.msg </user>
+                        r@ chatml :> [pop()].msg </user>
+                    \ complete it by chat command 
+                        chat 
+                    \ copy chatml[-1] 取代 chatml[@r+1]
+                        chatml [-1] ( complete )
+                        r> chatml :: [pop()+1]=pop() ( R: empty )
+                    \ remove chatml[-2,-1]
+                        chatml :: splice(-2) to chatml
+                    ;
     \ : DoDelete      ( -- ) \ Delete the recent chat turn and move to the next if possible. 
     \                 chatml :> length 1 <= if 
     \                     cr ." The chat editor cannot delete the only chat turn." cr 
@@ -6355,6 +6370,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     <button onclick="vm.dictate('DoDuplicate')"  title="Duplicate this turn in order to insert or append a new turn based on it."> Duplicate </button>
                     <button onclick="vm.dictate('DoClose')"      title="Close editor"> Close </button>
                     <button onclick="vm.dictate('DoSave')"       title="Save changes"> Save </button>
+                    <button onclick="vm.dictate('DoComplete')"   title="Complete this turn and append the answer below"> Complete </button>
                     <label title="Resend this chat turn to redirect the conversation. Use with caution! All existing chat content afterwards will be lost." style="margin-left:30px;">
                         I am sure<input type="checkbox" id="enableresend">
                         <button onclick="vm.dictate('DoResend')"> Resend </button>
@@ -6984,6 +7000,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
             \ waiting for api key become available
             [begin] 100 nap api_key [until]
             ( element ) :: remove()
+
         [then]
 
     \ Greetings at system started
