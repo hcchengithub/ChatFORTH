@@ -6746,7 +6746,7 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     | `info` | to check if 'total_tokens' is approaching the limit. |
                     | `davinci` | also gpt4, gpt35, .. etc |
                     | `ai?` | what is the AI model currently in use? |
-                    | `tutor` | We have three commands to provide you with the corresponding documents: (1) `tutor` for what you are currently reading, (2) `load_chatforth_book` to overwrite the recent context with the book, and (3) `manual-for-help:` for training on ChatFORTH itself.|
+                    | `tutor` | We have three commands to provide you with the corresponding documents: (1) `tutor` for what you are currently reading, (2) `loadchatforthbook` to overwrite the recent context with the book, and (3) `manual-for-help:` for training on ChatFORTH itself.|
                     | `correctify: ...` | Correct your English |
                     | `english-teacher` | Practice English vocabulary with you. |
                     | `help`  |for general usages, e.g. F9 F10 adjust inputbox size |
@@ -6767,12 +6767,12 @@ code <o>escape  ( "HTML lines" -- "cooked" ) \ Convert <o> </o> to &lt;o&gt;brab
                     \ interesting method but I'd rather to use a more readable way.
 
 
-        : load_chatforth_book ( -- ) \ Load the context to chatlkk_book localStorage key and print it.
+        : loadchatforthbook ( -- ) \ Load the context to chatlkk_book localStorage key and print it.
                     <js>
                     [
                       {
                         "tag": "<|im_start|>user",
-                        "msg": "# The ChatFORTH Book\n\n## Introduction\n\nThis article was written by ChatFORTH itself, or the author used ChatFORTH's functions to guide it in writing. When using the `load_chatforth_book` command, a context will be loaded into ChatFORTH. This context was saved on-site by the author after guiding ChatFORTH in writing this article. If you use the dir command, you can see `chatforth_book` in localStorage, which is the content loaded by the `load_chatforth_book` command. One of ChatFORTH's most important features is that it can edit contexts, which is necessary for having deep conversations with AI (such as writing this article). Otherwise, things could get messed up and progress would be impossible. You can directly modify this context for practice purposes. Moreover, simply using the `load_chatforth_book` command again will reload the original data so you won't destroy it. Hopefully through this introduction everyone can have a deeper understanding of how to operate ChatFORTH and its characteristics so that they can have faster and more accurate conversations with AI!",
+                        "msg": "# The ChatFORTH Book\n\n## Introduction\n\nThis article was written by ChatFORTH itself, or the author used ChatFORTH's functions to guide it in writing. When using the `loadchatforthbook` command, a context will be loaded into ChatFORTH. This context was saved on-site by the author after guiding ChatFORTH in writing this article. If you use the dir command, you can see `chatforth_book` in localStorage, which is the content loaded by the `loadchatforthbook` command. One of ChatFORTH's most important features is that it can edit contexts, which is necessary for having deep conversations with AI (such as writing this article). Otherwise, things could get messed up and progress would be impossible. You can directly modify this context for practice purposes. Moreover, simply using the `loadchatforthbook` command again will reload the original data so you won't destroy it. Hopefully through this introduction everyone can have a deeper understanding of how to operate ChatFORTH and its characteristics so that they can have faster and more accurate conversations with AI!",
                         "time": "2023-05-28T05:17:28.043Z",
                         "ai": "ChatVD1500",
                         "cost": 0.002646
